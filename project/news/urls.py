@@ -2,17 +2,21 @@ from django.urls import path
 from .views import (
     NewsList,
     NewsDetail,
-    PostCreateView,
-    PostUpdateView,
-    PostDeleteView,
-    add_comment,
+    NewsCreate, NewsUpdate, NewsDelete,
+    ArticleCreate, ArticleUpdate, ArticleDelete,
+    news_search
 )
 
 urlpatterns = [
-    path('', NewsList.as_view()),
-    path('<int:id>/', NewsDetail.as_view()),
-    path('post/new/', PostCreateView.as_view(), name='post-create'),
-    path('post/<int:pk>/edit/', PostUpdateView.as_view(), name='post-edit'),
-    path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),
-    path('post/<int:pk>/comment/', add_comment, name='add-comment'),
+    path('', NewsList.as_view(), name='news'),
+    path('search/', news_search, name='news_search'),
+    path('<int:pk>/', NewsDetail.as_view()),
+    # Новости: Создание, обновление, удаление
+    path('create/', NewsCreate.as_view(), name='news_create'),
+    path('<int:pk>/edit/', NewsUpdate.as_view(), name='news_edit'),
+    path('<int:pk>/delete/', NewsDelete.as_view(), name='news_delete'),
+    # Статьи: Создание, обновление, удаление
+    path('articles/create/', ArticleCreate.as_view(), name='article_create'),
+    path('articles/<int:pk>/edit/', ArticleUpdate.as_view(), name='article_edit'),
+    path('articles/<int:pk>/delete/', ArticleDelete.as_view(), name='article_delete'),
 ]
