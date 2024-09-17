@@ -13,3 +13,8 @@ def censor(text):
         # Замена слов с первой заглавной буквой
         text = text.replace(word.capitalize(), '*' * len(word))
     return text
+
+
+@register.filter
+def is_author(user):
+    return user.groups.filter(name='authors').exists()

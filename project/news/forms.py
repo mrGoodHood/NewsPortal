@@ -1,5 +1,7 @@
 from django import forms
 from .models import Post, Author
+from allauth.account.forms import SignupForm
+from django.contrib.auth.models import Group
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -24,3 +26,11 @@ class FilterForm(forms.Form):
         label='Дата после',
         widget=forms.DateInput(attrs={'type': 'date'})  # Виджет для выбора даты
     )
+
+
+class CustomSignupForm(SignupForm):
+    def save(self, request):
+        user = super(CustomSignupForm, self).save(request)
+        common_group, created = Group.objects.get_or_create(name='common')
+        user.groups.add(common_group)
+        return user

@@ -4,7 +4,8 @@ from .views import (
     NewsDetail,
     NewsCreate, NewsUpdate, NewsDelete,
     ArticleCreate, ArticleUpdate, ArticleDelete,
-    news_search
+    news_search,
+    become_author, user_profile
 )
 
 urlpatterns = [
@@ -19,4 +20,7 @@ urlpatterns = [
     path('articles/create/', ArticleCreate.as_view(), name='article_create'),
     path('articles/<int:pk>/edit/', ArticleUpdate.as_view(), name='article_edit'),
     path('articles/<int:pk>/delete/', ArticleDelete.as_view(), name='article_delete'),
+    # Аккаунт
+    path('profile/', user_profile, name='user_profile'),
+    path('become_author/', become_author, name ='become_author'),
 ]
