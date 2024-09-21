@@ -5,7 +5,7 @@ from .views import (
     NewsCreate, NewsUpdate, NewsDelete,
     ArticleCreate, ArticleUpdate, ArticleDelete,
     news_search,
-    become_author, user_profile
+    become_author, user_profile, subscribe_to_category
 )
 
 urlpatterns = [
@@ -23,4 +23,5 @@ urlpatterns = [
     # Аккаунт
     path('profile/', user_profile, name='user_profile'),
     path('become_author/', become_author, name ='become_author'),
+    path('category/<int:category_id>/subscribe/', subscribe_to_category, name='subscribe_to_category'),
 ]
