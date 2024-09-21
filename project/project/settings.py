@@ -24,6 +24,7 @@ INSTALLED_APPS = [
 
     'news',
     'django_filters',
+    'django_crontab',
 
     'allauth',
     'allauth.account',
@@ -35,6 +36,7 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/profile/'
 
 SITE_ID = 1
+SITE_URL = 'http://localhost:8000'
 
 
 AUTHENTICATION_BACKENDS = (
@@ -138,3 +140,19 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 
 ACCOUNT_FORMS = {'signup': 'news.forms.CustomSignupForm',}
+
+
+# Отпрравка писем
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'AndreyIvanovdo165@gmail.com'
+EMAIL_HOST_PASSWORD = 'Password'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_SUBJECT_PREFIX = '[News Portal]'
+
+# Задание для cron
+CRONJOBS = [
+    ('0 0 * * 0', 'news.cron.send_weekly_updates')  # Выполнять каждое воскресенье в полночь
+]
