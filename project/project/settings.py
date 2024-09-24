@@ -7,8 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Безопасность
 SECRET_KEY = 'django-insecure-4b^4pms&3s^xr!e9mjg6%hbkt9z-324ekd^hzoqp5=74g6v_hp'
-DEBUG = True    #Включить False в продакшене
-ALLOWED_HOSTS = []  #Указать допустимые хосты в продакшене
+DEBUG = True
+ALLOWED_HOSTS = []
 
 
 # Установленные приложения
@@ -24,7 +24,7 @@ INSTALLED_APPS = [
 
     'news',
     'django_filters',
-    'django_crontab',
+    'django_apscheduler',
 
     'allauth',
     'allauth.account',
@@ -152,7 +152,7 @@ EMAIL_HOST_PASSWORD = 'Password'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 EMAIL_SUBJECT_PREFIX = '[News Portal]'
 
-# Задание для cron
-CRONJOBS = [
-    ('0 0 * * 0', 'news.cron.send_weekly_updates')  # Выполнять каждое воскресенье в полночь
-]
+
+# Apscheduler
+APSCHEDULER_DATETIME_FORMAT = 'M d \'y, H:i:s'
+APSCHEDULER_RUN_NOW_TIMEOUT = 25

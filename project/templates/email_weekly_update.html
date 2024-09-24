@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Еженедельное обновление</title>
+</head>
+<body>
+    <h1>Привет, {{ username }}!</h1>
+    <p>Вот новые статьи, добавленные за последнюю неделю:</p>
+    <ul>
+        {% for post in posts %}
+            <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

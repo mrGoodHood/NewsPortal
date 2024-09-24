@@ -11,6 +11,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['author', 'post_type', 'categories', 'title', 'text']
+        widgets = {
+            'categories': forms.CheckboxSelectMultiple(),
+        }
 
 class FilterForm(forms.Form):
     title = forms.ModelChoiceField(
