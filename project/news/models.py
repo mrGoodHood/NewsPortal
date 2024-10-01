@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
+from django.urls import reverse
 
 
 class Author(models.Model):
@@ -49,6 +50,10 @@ class Post(models.Model):
 
     def __str__(self):
         return f'{self.title}: {self.text}'
+
+
+    def get_absolute_url(self):
+        return f'/news/{self.id}'
 
 
     def like(self):
