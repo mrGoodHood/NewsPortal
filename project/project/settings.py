@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
 # Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -156,3 +160,11 @@ EMAIL_SUBJECT_PREFIX = '[News Portal]'
 # Apscheduler
 APSCHEDULER_DATETIME_FORMAT = 'M d \'y, H:i:s'
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+
+# Celery Config
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
