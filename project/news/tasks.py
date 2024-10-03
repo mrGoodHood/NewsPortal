@@ -1,14 +1,10 @@
-# На Windows нужно запустить в разных терминалах:
-# cd np && celery -A np worker -l INFO --pool=solo
-# cd np && celery -A np beat -l INFO
-# Перед этим в отдельном терминале запустить сервер
-# Redis (если установлен локально): redis-server
-import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from celery import shared_task
+from celery.schedules import crontab
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from project.celery import app
 
 from news.models import Post, Category
 
@@ -20,16 +16,15 @@ def notify_subscribers(post_pk):
     добавляется новая статья, её краткое содержание приходит пользователю на
     электронную почту, которую он указал при регистрации
     """
-
     post = Post.objects.get(pk=post_pk)
     subscribers = set()
-    [subscribers.update(set(category.subscribers.all())) for category in post.category.all()]
+    [subscribers.update(get_subscribers(category)) for category in post.category.all()]
     for user in subscribers:
-        text_content = (f'Здравствуй, @{str(user)}. '
+        text_content = (f'Привет, @{str(user)}. '
                         f'Новая статья в твоём любимом разделе!\n'
                         f'{post.title}\n{post.text[:50]}\n'
                         f'http://127.0.0.1:8000{post.get_absolute_url()}')
-        html_content = render_to_string('email/new_post.html',
+        html_content = render_to_string('email_notification.html',
                                         {'post': post, 'user': user})
         email = EmailMultiAlternatives(subject=post.title,
                                        body=text_content,
@@ -45,7 +40,6 @@ def weekly_digest():
     понедельник в 8:00 утра ему приходит на почту список новых статей,
     появившийся за неделю с гиперссылкой на каждую из них
     """
-
     mailing = dict()
     week_ago = datetime.now() - timedelta(days=7)
     base_url = 'http://127.0.0.1:8000'
@@ -60,13 +54,26 @@ def weekly_digest():
 
     for user, posts in mailing.items():
         post_list = '\n'.join([f'{post}: {base_url}{post.get_absolute_url()}' for post in posts])
-        text_content = (f'Здравствуй, @{str(user)}. '
-                        f'Новое за прошедшую неделю:\n'
+        text_content = (f'Привет, @{str(user)}. '
+                        f'Новости за прошедшую неделю:\n'
                         f'{post_list}')
-        html_content = render_to_string('email/weekly_digest.html',
+        html_content = render_to_string('email_weekly_update.html',
                                         {'posts': posts, 'user': user})
-        email = EmailMultiAlternatives(subject='Еженедельный Дайджест',
+        email = EmailMultiAlternatives(subject='Еженедельное обновление',
                                        body=text_content,
                                        to=(user.email,))
         email.attach_alternative(html_content, 'text/html')
         email.send()
+
+
+        # Настройка расписания задачи в Celery
+        app.conf.beat_schedule = {
+            'send_weekly_digest': {
+                'task': 'news.tasks.weekly_digest',
+                'schedule': crontab(hour=8, minute=0, day_of_week='monday'),
+            },
+        }
+
+
+def get_subscribers(category):
+    return set(category.subscribers.all())
