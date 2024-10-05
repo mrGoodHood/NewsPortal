@@ -1,10 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 from allauth.account.forms import SignupForm
 from django.contrib.auth.models import Group
 from django.urls import reverse
 
+from django.core.cache import cache
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='author_profile')
@@ -69,6 +71,10 @@ class Post(models.Model):
         if len(self.text) > preview_length:
             return self.text[:preview_length] + '...'
         return self.text
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(f'post-{self.pk}')
 
 
 class PostCategory(models.Model):

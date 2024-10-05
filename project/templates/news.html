@@ -1,50 +1,55 @@
 {% extends 'flatpages/default.html' %}
 {% load custom_filters %}
+{% load cache %}
 
-{% block title %}
-    News
-{% endblock title %}
+{% cache 60 title %}
+    {% block title %}
+        News
+    {% endblock title %}
+{% endcache %}
 
-{% block content %}
-    <h1>Все посты</h1>
-    <h3>{{ time_now|date:'M d Y' }}</h3>
-    <p>Всего новостей: {{ news|length }}</p>    <!-- отображение количества новостей -->
-    <hr>
-    {% if news %}
-        <table>
-            <tr>
-                <td>Заголовок</td>
-                <td>Дата публикации</td>
-                <td>Текст</td>
-            </tr>
-            {% for post in news %}
-            <tr>
-                <td>{{ post.title|censor }}</td>    <!-- Фильтр censor к заголовку -->
-                <td>{{ post.created_at }}</td>
-                <td>{{ post.text|censor|truncatewords:20 }}</td>    <!-- Фильтр censor к тексту -->
-            </tr>
-            {% endfor %}
-        </table>
-    {% else %}
-        <h2> Новостей нет! </h2>
-    {% endif %}
-    {% if page_obj.has_previous %}
-        <a href="?page=1">1</a>
-        {% if page_obj.previous_page_number != 1 %}
-            ...
-            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+{% cache 60 content %}
+    {% block content %}
+        <h1>Все посты</h1>
+        <h3>{{ time_now|date:'M d Y' }}</h3>
+        <p>Всего новостей: {{ news|length }}</p>    <!-- отображение количества новостей -->
+        <hr>
+        {% if news %}
+            <table>
+                <tr>
+                    <td>Заголовок</td>
+                    <td>Дата публикации</td>
+                    <td>Текст</td>
+                </tr>
+                {% for post in news %}
+                <tr>
+                    <td>{{ post.title|censor }}</td>    <!-- Фильтр censor к заголовку -->
+                    <td>{{ post.created_at }}</td>
+                    <td>{{ post.text|censor|truncatewords:20 }}</td>    <!-- Фильтр censor к тексту -->
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <h2> Новостей нет! </h2>
         {% endif %}
-    {% endif %}
-
-    {# Информация о текущей странице #}
-    {{ page_obj.number }}
-
-    {# Информация о следующих страницах #}
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
-        {% if paginator.num_pages != page_obj.next_page_number %}
-            ...
-            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+        {% if page_obj.has_previous %}
+            <a href="?page=1">1</a>
+            {% if page_obj.previous_page_number != 1 %}
+                ...
+                <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+            {% endif %}
         {% endif %}
-    {% endif %}
-{% endblock content %}
+
+        {# Информация о текущей странице #}
+        {{ page_obj.number }}
+
+        {# Информация о следующих страницах #}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+            {% if paginator.num_pages != page_obj.next_page_number %}
+                ...
+                <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+            {% endif %}
+        {% endif %}
+    {% endblock content %}
+{% endcache %}

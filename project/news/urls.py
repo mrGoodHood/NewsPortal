@@ -7,11 +7,13 @@ from .views import (
     news_search,
     become_author, user_profile, subscribe_to_category
 )
+from django.views.decorators.cache import cache_page
+
 
 urlpatterns = [
-    path('', NewsList.as_view(), name='news'),
+    path('', cache_page(60)(NewsList.as_view()), name='news'),
     path('search/', news_search, name='news_search'),
-    path('<int:pk>/', NewsDetail.as_view()),
+    path('<int:pk>/', cache_page(60*5)(NewsDetail.as_view())),
     # Новости: Создание, обновление, удаление
     path('create/', NewsCreate.as_view(), name='news_create'),
     path('<int:pk>/edit/', NewsUpdate.as_view(), name='news_edit'),
