@@ -146,7 +146,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {'signup': 'news.forms.CustomSignupForm',}
 
 
-# Отпрравка писем
+# Отправка писем
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 465
@@ -170,10 +170,113 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 
-# Cache
+# Кэширование
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
+    }
+}
+
+
+# Логирование
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'console_formatter': {
+            'format': '%(asctime)s %(levelname)-8s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'file_general_formatter': {
+            'format': '%(asctime)s %(levelname)-8s [%(module)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'file_errors_formatter': {
+            'format': '%(asctime)s %(levelname)-8s %(pathname)s\n%(message)s\n%(exc_info)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'file_security_formatter': {
+            'format': '%(asctime)s %(levelname)-8s [%(module)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'email_formatter': {
+            'format': '%(asctime)s %(levelname)-8s %(pathname)s\n%(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'console_formatter',
+            'filters': ['require_debug_true']
+        },
+        'general_file_handler': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/general.log',
+            'formatter': 'file_general_formatter',
+            'filters': ['require_debug_false']
+        },
+        'errors_file_handler': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/errors.log',
+            'formatter': 'file_errors_formatter'
+        },
+        'security_file_handler': {
+            'level': 'WARNING',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/security.log',
+            'formatter': 'file_security_formatter'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': False,
+            'formatter': 'email_formatter',
+            'filters': ['require_debug_false']
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'general_file_handler'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['mail_admins', 'errors_file_handler'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['mail_admins', 'errors_file_handler'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.template': {
+            'handlers': ['errors_file_handler'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['errors_file_handler'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.security': {
+            'handlers': ['security_file_handler'],
+            'level': 'WARNING',
+            'propagate': False,
+        }
     }
 }
